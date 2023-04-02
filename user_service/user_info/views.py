@@ -18,22 +18,30 @@ def user_data(uname):
 
 @csrf_exempt
 def user_info(request):
+    resp = {}
     # uname = request.POST.get("User Name")
     if request.method == 'POST':
         if 'application/json' in request.META['CONTENT_TYPE']:
             val1 = json.loads(request.body)
-            uname = val1.get('email')
-            resp = {}
+            print(val1)
+            uname = val1['uname']
+            print(uname)
             if uname:
                 # Calling the getting the user info.
                 respdata = user_data(uname)
+                print("checked:",respdata)
                 dict1 = {}
                 if respdata:
-                    dict1['fname'] = respdata.get('fname', '')
-                    dict1['lname'] = respdata.get('lname', '')
-                    dict1['mobile'] = respdata.get('mobile', '')
-                    dict1['email'] = respdata.get('email', '')
-                    dict1['address'] = respdata.get('address', '')
+                    # dict1['fname'] = respdata.get('fname', '')
+                    # dict1['lname'] = respdata.get('lname', '')
+                    # dict1['mobile'] = respdata.get('mobile', '')
+                    # dict1['email'] = respdata.get('email', '')
+                    # dict1['address'] = respdata.get('address', '')
+                    dict1['fname'] = respdata['fname']
+                    dict1['lname'] = respdata['lname']
+                    dict1['mobile'] = respdata['mobile']
+                    dict1['email'] = respdata['email']
+                    dict1['address'] = respdata['address']
                 if dict1:
                     resp['status'] = 'Success'
                     resp['status_code'] = '200'
@@ -43,17 +51,21 @@ def user_info(request):
                     resp['status'] = 'Failed'
                     resp['status_code'] = '400'
                     resp['message'] = 'User Not Found.'
+                    resp['data'] ={}
                     # The field value is missing.
             else:
                 resp['status'] = 'Failed'
                 resp['status_code'] = '400'
                 resp['message'] = 'Fields is mandatory.'
+                resp['data'] ={}
         else:
             resp['status'] = 'Failed'
             resp['status_code'] = '400'
             resp['message'] = 'Request type is not matched.'
+            resp['data'] ={}
     else:
         resp['status'] = 'Failed'
         resp['status_code'] = '400'
         resp['message'] = 'Request type is not matched.'
+        resp['data'] ={}
     return HttpResponse(json.dumps(resp), content_type='application/json')
